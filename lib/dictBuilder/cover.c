@@ -24,7 +24,6 @@
 #include <stdio.h>  /* fprintf */
 #include <stdlib.h> /* malloc, free, qsort */
 #include <string.h> /* memset */
-#include <time.h>   /* clock */
 
 #ifndef ZDICT_STATIC_LINKING_ONLY
 #  define ZDICT_STATIC_LINKING_ONLY
@@ -59,30 +58,19 @@ static int g_displayLevel = 0;
 #endif
 #undef  DISPLAY
 #define DISPLAY(...)                                                           \
-  {                                                                            \
-    fprintf(stderr, __VA_ARGS__);                                              \
-    fflush(stderr);                                                            \
-  }
+  do {                                                                         \
+  } while (0)
 #undef  LOCALDISPLAYLEVEL
 #define LOCALDISPLAYLEVEL(displayLevel, l, ...)                                \
-  if (displayLevel >= l) {                                                     \
-    DISPLAY(__VA_ARGS__);                                                      \
-  } /* 0 : no display;   1: errors;   2: default;  3: details;  4: debug */
+  do {                                                                         \
+  } while (0) /* 0 : no display;   1: errors;   2: default;  3: details;  4: debug */
 #undef  DISPLAYLEVEL
 #define DISPLAYLEVEL(l, ...) LOCALDISPLAYLEVEL(g_displayLevel, l, __VA_ARGS__)
 
-#ifndef LOCALDISPLAYUPDATE
-static const clock_t g_refreshRate = CLOCKS_PER_SEC * 15 / 100;
-static clock_t g_time = 0;
-#endif
 #undef  LOCALDISPLAYUPDATE
 #define LOCALDISPLAYUPDATE(displayLevel, l, ...)                               \
-  if (displayLevel >= l) {                                                     \
-    if ((clock() - g_time > g_refreshRate) || (displayLevel >= 4)) {           \
-      g_time = clock();                                                        \
-      DISPLAY(__VA_ARGS__);                                                    \
-    }                                                                          \
-  }
+  do {                                                                         \
+  } while (0)
 #undef  DISPLAYUPDATE
 #define DISPLAYUPDATE(l, ...) LOCALDISPLAYUPDATE(g_displayLevel, l, __VA_ARGS__)
 

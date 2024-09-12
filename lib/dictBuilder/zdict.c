@@ -39,7 +39,6 @@
 #include <stdlib.h>        /* malloc, free */
 #include <string.h>        /* memset */
 #include <stdio.h>         /* fprintf, fopen, ftello64 */
-#include <time.h>          /* clock */
 
 #ifndef ZDICT_STATIC_LINKING_ONLY
 #  define ZDICT_STATIC_LINKING_ONLY
@@ -74,11 +73,9 @@ static const U32 g_selectivity_default = 9;
 *  Console display
 ***************************************/
 #undef  DISPLAY
-#define DISPLAY(...)         do { fprintf(stderr, __VA_ARGS__); fflush( stderr ); } while (0)
+#define DISPLAY(...)         do {} while (0)
 #undef  DISPLAYLEVEL
-#define DISPLAYLEVEL(l, ...) do { if (notificationLevel>=l) { DISPLAY(__VA_ARGS__); } } while (0)    /* 0 : no display;   1: errors;   2: default;  3: details;  4: debug */
-
-static clock_t ZDICT_clockSpan(clock_t nPrevious) { return clock() - nPrevious; }
+#define DISPLAYLEVEL(l, ...) do {} while (0)    /* 0 : no display;   1: errors;   2: default;  3: details;  4: debug */
 
 static void ZDICT_printHex(const void* ptr, size_t length)
 {
@@ -473,19 +470,10 @@ static size_t ZDICT_trainBuffer_legacy(dictItem* dictList, U32 dictListSize,
     BYTE* doneMarks = (BYTE*)malloc((bufferSize+16)*sizeof(*doneMarks));   /* +16 for overflow security */
     U32* filePos = (U32*)malloc(nbFiles * sizeof(*filePos));
     size_t result = 0;
-    clock_t displayClock = 0;
-    clock_t const refreshRate = CLOCKS_PER_SEC * 3 / 10;
 
 #   undef  DISPLAYUPDATE
 #   define DISPLAYUPDATE(l, ...)                                   \
         do {                                                       \
-            if (notificationLevel>=l) {                            \
-                if (ZDICT_clockSpan(displayClock) > refreshRate) { \
-                    displayClock = clock();                        \
-                    DISPLAY(__VA_ARGS__);                          \
-                }                                                  \
-                if (notificationLevel>=4) fflush(stderr);          \
-            }                                                      \
         } while (0)
 
     /* init */
