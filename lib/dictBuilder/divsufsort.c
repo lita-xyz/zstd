@@ -36,7 +36,6 @@
 
 
 /*- Dependencies -*/
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -101,26 +100,22 @@
 #endif /* MAX */
 #define STACK_PUSH(_a, _b, _c, _d)\
   do {\
-    assert(ssize < STACK_SIZE);\
     stack[ssize].a = (_a), stack[ssize].b = (_b),\
     stack[ssize].c = (_c), stack[ssize++].d = (_d);\
   } while(0)
 #define STACK_PUSH5(_a, _b, _c, _d, _e)\
   do {\
-    assert(ssize < STACK_SIZE);\
     stack[ssize].a = (_a), stack[ssize].b = (_b),\
     stack[ssize].c = (_c), stack[ssize].d = (_d), stack[ssize++].e = (_e);\
   } while(0)
 #define STACK_POP(_a, _b, _c, _d)\
   do {\
-    assert(0 <= ssize);\
     if(ssize == 0) { return; }\
     (_a) = stack[--ssize].a, (_b) = stack[ssize].b,\
     (_c) = stack[ssize].c, (_d) = stack[ssize].d;\
   } while(0)
 #define STACK_POP5(_a, _b, _c, _d, _e)\
   do {\
-    assert(0 <= ssize);\
     if(ssize == 0) { return; }\
     (_a) = stack[--ssize].a, (_b) = stack[ssize].b,\
     (_c) = stack[ssize].c, (_d) = stack[ssize].d, (_e) = stack[ssize].e;\
@@ -1627,9 +1622,6 @@ construct_SA(const unsigned char *T, int *SA,
           i <= j;
           --j) {
         if(0 < (s = *j)) {
-          assert(T[s] == c1);
-          assert(((s + 1) < n) && (T[s] <= T[s + 1]));
-          assert(T[s - 1] <= T[s]);
           *j = ~s;
           c0 = T[--s];
           if((0 < s) && (T[s - 1] > c0)) { s = ~s; }
@@ -1637,10 +1629,8 @@ construct_SA(const unsigned char *T, int *SA,
             if(0 <= c2) { BUCKET_B(c2, c1) = k - SA; }
             k = SA + BUCKET_B(c2 = c0, c1);
           }
-          assert(k < j); assert(k != NULL);
           *k-- = s;
         } else {
-          assert(((s == 0) && (T[s] == c1)) || (s < 0));
           *j = ~s;
         }
       }
@@ -1654,17 +1644,14 @@ construct_SA(const unsigned char *T, int *SA,
   /* Scan the suffix array from left to right. */
   for(i = SA, j = SA + n; i < j; ++i) {
     if(0 < (s = *i)) {
-      assert(T[s - 1] >= T[s]);
       c0 = T[--s];
       if((s == 0) || (T[s - 1] < c0)) { s = ~s; }
       if(c0 != c2) {
         BUCKET_A(c2) = k - SA;
         k = SA + BUCKET_A(c2 = c0);
       }
-      assert(i < k);
       *k++ = s;
     } else {
-      assert(s < 0);
       *i = ~s;
     }
   }
@@ -1691,9 +1678,6 @@ construct_BWT(const unsigned char *T, int *SA,
           i <= j;
           --j) {
         if(0 < (s = *j)) {
-          assert(T[s] == c1);
-          assert(((s + 1) < n) && (T[s] <= T[s + 1]));
-          assert(T[s - 1] <= T[s]);
           c0 = T[--s];
           *j = ~((int)c0);
           if((0 < s) && (T[s - 1] > c0)) { s = ~s; }
@@ -1701,13 +1685,11 @@ construct_BWT(const unsigned char *T, int *SA,
             if(0 <= c2) { BUCKET_B(c2, c1) = k - SA; }
             k = SA + BUCKET_B(c2 = c0, c1);
           }
-          assert(k < j); assert(k != NULL);
           *k-- = s;
         } else if(s != 0) {
           *j = ~s;
 #ifndef NDEBUG
         } else {
-          assert(T[s] == c1);
 #endif
         }
       }
@@ -1721,7 +1703,6 @@ construct_BWT(const unsigned char *T, int *SA,
   /* Scan the suffix array from left to right. */
   for(i = SA, j = SA + n, orig = SA; i < j; ++i) {
     if(0 < (s = *i)) {
-      assert(T[s - 1] >= T[s]);
       c0 = T[--s];
       *i = c0;
       if((0 < s) && (T[s - 1] < c0)) { s = ~((int)T[s - 1]); }
@@ -1729,7 +1710,6 @@ construct_BWT(const unsigned char *T, int *SA,
         BUCKET_A(c2) = k - SA;
         k = SA + BUCKET_A(c2 = c0);
       }
-      assert(i < k);
       *k++ = s;
     } else if(s != 0) {
       *i = ~s;
@@ -1772,9 +1752,6 @@ construct_BWT_indexes(const unsigned char *T, int *SA,
           i <= j;
           --j) {
         if(0 < (s = *j)) {
-          assert(T[s] == c1);
-          assert(((s + 1) < n) && (T[s] <= T[s + 1]));
-          assert(T[s - 1] <= T[s]);
 
           if ((s & mod) == 0) indexes[s / (mod + 1) - 1] = j - SA;
 
@@ -1785,13 +1762,11 @@ construct_BWT_indexes(const unsigned char *T, int *SA,
             if(0 <= c2) { BUCKET_B(c2, c1) = k - SA; }
             k = SA + BUCKET_B(c2 = c0, c1);
           }
-          assert(k < j); assert(k != NULL);
           *k-- = s;
         } else if(s != 0) {
           *j = ~s;
 #ifndef NDEBUG
         } else {
-          assert(T[s] == c1);
 #endif
         }
       }
@@ -1812,7 +1787,6 @@ construct_BWT_indexes(const unsigned char *T, int *SA,
   /* Scan the suffix array from left to right. */
   for(i = SA, j = SA + n, orig = SA; i < j; ++i) {
     if(0 < (s = *i)) {
-      assert(T[s - 1] >= T[s]);
 
       if ((s & mod) == 0) indexes[s / (mod + 1) - 1] = i - SA;
 
@@ -1822,7 +1796,6 @@ construct_BWT_indexes(const unsigned char *T, int *SA,
         BUCKET_A(c2) = k - SA;
         k = SA + BUCKET_A(c2 = c0);
       }
-      assert(i < k);
       if((0 < s) && (T[s - 1] < c0)) {
           if ((s & mod) == 0) indexes[s / (mod + 1) - 1] = k - SA;
           *k++ = ~((int)T[s - 1]);
